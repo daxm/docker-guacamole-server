@@ -1,0 +1,42 @@
+version: '3'
+
+services:
+    mysql:
+        build: ./mysql/
+        container_name: my_mysql
+        restart: always
+        env_file:
+            - ./env_file
+        volumes:
+            - ./mysql/database:/var/lib/mysql
+        networks:
+            db_net:
+
+    guacd:
+        image: guacamole/guacd
+        container_name: my_guacd
+        restart: always
+        networks:
+            guac_net:
+
+    guacamole:
+        image: guacamole/guacamole
+        container_name: my_guacamole
+        restart: always
+        env_file:
+            - ./env_file        
+        networks:
+            db_net:
+            guac_net:
+            proxy_net:
+        depends_on:
+            - guacd
+            - mysql
+        ports:
+            - "8080:8080"
+
+networks:
+    db_net:
+    guac_net:
+    proxy_net:
+
