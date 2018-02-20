@@ -3,5 +3,5 @@ MYSQL_ROOT_PASSWORD=fix-me-2!
 MYSQL_DATABASE=guacamole
 MYSQL_USER=guacamole
 MYSQL_PASSWORD=fix-me-3!
-GUACD_HOSTNAME=my_guacd
 MYSQL_HOSTNAME=my_mysql
+GUACD_HOSTNAME=my_guacd
