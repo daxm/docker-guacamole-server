@@ -12,13 +12,11 @@ sudo apt install python3 python3-pip python3-setuptools
 sudo -H pip3 install docker-compose
 
 # Make development environment
-mkdir -C ~/containers/guacamole_project
-cd ~/containers/guacamole_project
+mkdir -C ~/containers
 git clone https://github.com/daxm/docker-guacamole-server
-cd ~/containers/guacamole_project/nginx/certs
+mkdir -C ~/containers/docker-guacamole-server/nginx/certs
+cd ~/containers/docker-guacamole-server/nginx/certs
 sudo openssl req -newkey rsa:2048 -nodes -keyout nginx.key -x509  -days 1024 -out nginx.crt
-cd ~/containers/guacamole_project
+cd ~/containers/docker-guacamole-server
 # Update env_file to meet password requirements
-sudo docker-compose build
-sudo docker-compose up -d
-
+sudo docker-compose up --build -d
