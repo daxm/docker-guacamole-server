@@ -26,7 +26,10 @@ cd ~/containers/guacamole_project/nginx/certs
 sudo openssl req -newkey rsa:2048 -nodes -keyout nginx.key -x509  -days 1024 -out nginx.crt
 cd ~/containers/guacamole_project
 git clone https://github.com/daxm/guacamole_project
+```
+
 # Update env_file to meet password requirements
+```bash
 sudo docker-compose build
 sudo docker-compose up -d
 ```
