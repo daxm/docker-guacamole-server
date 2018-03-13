@@ -28,7 +28,9 @@ cd ~/containers/guacamole_project
 git clone https://github.com/daxm/guacamole_project
 ```
 
-# Update env_file to meet password requirements
+Update env_file to meet password requirements
+
+# Use docker-compose to build/start containers
 ```bash
 sudo docker-compose build
 sudo docker-compose up -d
