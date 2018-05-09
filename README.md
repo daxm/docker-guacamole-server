@@ -7,7 +7,11 @@ sudo apt remove docker*
 sudo apt install apt-transport-https ca-certificates curl software-properties-common
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 sudo apt-key fingerprint 0EBFCD88
-sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) nightly"
+```
+Note:  Ubuntu 18.04 doesn't have a "stable" repository yet.  Use the nightly until the stable is available.
+# sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+```bash
 sudo apt update
 sudo apt install docker-ce
 ```
@@ -20,18 +24,20 @@ sudo -H pip3 install docker-compose
 
 # Make development environment
 ```bash
-mkdir -C ~/containers/guacamole_project/mysql/database
-mkdir -C ~/containers/guacamole_project/nginx/certs
-cd ~/containers/guacamole_project/nginx/certs
+mkdir -p ~/containers
+cd ~/containers
+git clone https://github.com/daxm/docker-guacamole-server
+cd ./docker-guacamole-server
+mkdir -p ./mysql/database
+mkdir -p ./nginx/certs
+cd ./nginx/certs
 sudo openssl req -newkey rsa:2048 -nodes -keyout nginx.key -x509  -days 1024 -out nginx.crt
-cd ~/containers/guacamole_project
-git clone https://github.com/daxm/guacamole_project
 ```
 
 Update env_file to meet password requirements
 
 # Use docker-compose to build/start containers
 ```bash
-sudo docker-compose build
-sudo docker-compose up -d
+cd ~/containers/docker-guacamole-server
+sudo docker-compose up --build -d
 ```
