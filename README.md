@@ -34,7 +34,10 @@ cd ./nginx/certs
 sudo openssl req -newkey rsa:2048 -nodes -keyout nginx.key -x509  -days 1024 -out nginx.crt
 ```
 
-Update env_file to meet password requirements
+# Update env_file to meet password requirements
+```bash
+nano ./env_file
+```
 
 # Use docker-compose to build/start containers
 ```bash
