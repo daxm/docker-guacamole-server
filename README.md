@@ -10,7 +10,7 @@ sudo apt-key fingerprint 0EBFCD88
 sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) nightly"
 ```
 Note:  Ubuntu 18.04 doesn't have a "stable" repository yet.  Use the nightly until the stable is available.
-# sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
 ```bash
 sudo apt update
 sudo apt install docker-ce
