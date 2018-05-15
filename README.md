@@ -33,11 +33,13 @@ cd ./docker-guacamole-server
 # Prep MySQL and NGINX environments
 This file will create a directory for the mysql database and build a cert for nginx.
 ```bash
+cd ~/containers/docker-guacamole-server
 ./runme.sh
 ```
 
 # Update env_file to meet password requirements
 ```bash
+cd ~/containers/docker-guacamole-server
 nano ./env_file
 ```
 

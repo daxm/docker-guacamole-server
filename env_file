@@ -4,4 +4,5 @@ MYSQL_DATABASE=guacamole
 MYSQL_USER=guacamole
 MYSQL_PASSWORD=fix-me-3!
 MYSQL_HOSTNAME=my_mysql
+
 GUACD_HOSTNAME=my_guacd
