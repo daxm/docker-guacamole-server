@@ -28,10 +28,12 @@ mkdir -p ~/containers
 cd ~/containers
 git clone https://github.com/daxm/docker-guacamole-server
 cd ./docker-guacamole-server
-mkdir -p ./mysql/database
-mkdir -p ./nginx/certs
-cd ./nginx/certs
-sudo openssl req -newkey rsa:2048 -nodes -keyout nginx.key -x509  -days 1024 -out nginx.crt
+```
+
+# Prep MySQL and NGINX environments
+This file will create a directory for the mysql database and build a cert for nginx.
+```bash
+./runme.sh
 ```
 
 # Update env_file to meet password requirements
@@ -42,5 +44,5 @@ nano ./env_file
 # Use docker-compose to build/start containers
 ```bash
 cd ~/containers/docker-guacamole-server
-sudo docker-compose up --build -d
+sudo docker-compose up --build --detach --remove-orphans
 ```
