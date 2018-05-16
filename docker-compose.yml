@@ -22,7 +22,7 @@ services:
             guac_net:
 
     guacamole:
-        image: guacamole/guacamole
+        build: ./guacamole/
         container_name: my_guacamole
         restart: always
         env_file:

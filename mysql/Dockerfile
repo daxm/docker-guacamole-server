@@ -1,4 +1,4 @@
-FROM mysql:5.7.22
+FROM mysql
 
 ADD initdb.sql /docker-entrypoint-initdb.d
 
