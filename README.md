@@ -26,6 +26,7 @@ sudo -H pip3 install docker-compose
 ```bash
 sudo usermod -aG docker <your username here>
 ```
+NOTE:  Don't forget.  You need to log out and log back in for the group assignment to take.
 
 # Make development environment
 ```bash
