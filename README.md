@@ -32,7 +32,7 @@ cd ~/containers/docker-guacamole-server
 # Change Guacamole admin password
 - Access your new guacamole GUI by browsing to the IP address of your server.
 - Log in with **guacadmin**/**guacadmin**
-- Navigate to **guacadmin > Settings > Users**
+- Navigate to **guacadmin > Settings > Preferences**
 - Select **guacadmin**
 - Update password field to be something new/unique and click **Save**.
 
