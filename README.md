@@ -7,11 +7,13 @@ mkdir -p ~/containers
 cd ~/containers
 git clone https://github.com/daxm/docker-guacamole-server.git
 cd ./docker-guacamole-server
+
 ```
 
 # Install Docker
 ```bash
 ./install_docker.sh
+
 ```
 # Update User's group environment.
 * Log out and back in to update your user's group or the runme.sh script won't work.
@@ -20,6 +22,7 @@ cd ./docker-guacamole-server
 ```bash
 cd ~/containers/docker-guacamole-server
 nano ./env_file
+
 ```
 
 # Prep MySQL and NGINX environments and then build containers
@@ -27,6 +30,7 @@ This file will create a directory for the mysql database and build a cert for ng
 ```bash
 cd ~/containers/docker-guacamole-server
 ./runme.sh
+
 ```
 
 # Change Guacamole admin password
