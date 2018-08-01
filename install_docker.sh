@@ -24,13 +24,6 @@ sudo -H pip3 install docker-compose
 echo "Add current user to the docker group.  (Log out and back in to take effect.)"
 sudo usermod -aG docker $(whoami)
 
-echo "Make the ~/containers directory."
-mkdir -p ~/containers
-cd ~/containers
-echo "Clone repo into ~/containers and move into the newly created directory."
-git clone https://github.com/daxm/docker-guacamole-server
-cd ./docker-guacamole-server
-
 echo "########### NEXT STEPS ############"
 echo "1.  Edit the env_file and modify it to your environment."
 echo "2.  Run the runme.sh file to build, deploy, and start the Docker containers."

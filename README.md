@@ -1,6 +1,14 @@
 This is a project to build a series of Docker containers to support Guacamole, with a MySQL backend, that is frontended by NGINX using HTTPS.
 
 Notes to prep the server/VM to run/use this Git repo:
+# Clone this repository
+```bash
+mkdir -p ~/containers
+cd ~/containers
+git clone https://github.com/daxm/docker-guacamole-server
+cd ./docker-guacamole-server
+```
+
 # Install Docker
 ```bash
 ./install_docker.sh
