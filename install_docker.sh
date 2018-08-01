@@ -15,10 +15,10 @@ echo "Refresh APT Cache"
 sudo apt update
 
 echo "Install Docker CE"
-sudo apt install docker-ce
+sudo apt install docker-ce -y
 
-echo "Install Python3 and associated packages and modules."
-sudo apt install python3 python3-pip python3-setuptools
+echo "Install Python3 and associated packages and modules for Docker Compose."
+sudo apt install python3 python3-pip python3-setuptools -y
 sudo -H pip3 install docker-compose
 
 echo "Add current user to the docker group.  (Log out and back in to take effect.)"

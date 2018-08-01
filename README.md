@@ -5,7 +5,7 @@ Notes to prep the server/VM to run/use this Git repo:
 ```bash
 mkdir -p ~/containers
 cd ~/containers
-git clone https://github.com/daxm/docker-guacamole-server
+git clone https://github.com/daxm/docker-guacamole-server.git
 cd ./docker-guacamole-server
 ```
 
