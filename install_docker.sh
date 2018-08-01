@@ -4,7 +4,7 @@ echo "### Remove any previously installed Docker packages ###"
 sudo apt remove docker*
 
 echo "### Add APT Cert and Key ###"
-sudo apt install apt-transport-https ca-certificates curl software-properties-common
+sudo apt install apt-transport-https ca-certificates curl software-properties-common -y
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 sudo apt-key fingerprint 0EBFCD88
 
