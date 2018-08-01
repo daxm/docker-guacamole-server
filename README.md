@@ -13,6 +13,8 @@ cd ./docker-guacamole-server
 ```bash
 ./install_docker.sh
 ```
+# Update User's group environment.
+**Log out and back in to update your user's group or the runme.sh script won't work.**
 
 # Update env_file to meet password requirements
 ```bash
