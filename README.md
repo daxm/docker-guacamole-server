@@ -33,6 +33,15 @@ cd ~/containers/docker-guacamole-server
 
 ```
 
+```bash
+docker exec my_guacamole /opt/guacamole/bin/initdb.sh --mysql > ./mysql/initdb.sql
+```
+
+```bash
+./runme.sh
+
+```
+
 # Change Guacamole admin password
 - Access your new guacamole GUI by browsing to the IP address of your server.
 - Log in with **guacadmin**/**guacadmin**
