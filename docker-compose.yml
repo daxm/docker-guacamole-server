@@ -27,27 +27,23 @@ services:
     networks:
       - guac-net
 
-  guacd-init:
-    image: guacamole/guacd:1.6.0
-    container_name: guac-guacd-init
-    entrypoint: /bin/sh -c "mkdir -p /var/lib/guacamole/recordings /var/lib/guacamole/typescripts && chown 1001:1001 /var/lib/guacamole/recordings /var/lib/guacamole/typescripts && chmod 770 /var/lib/guacamole/recordings /var/lib/guacamole/typescripts"
-    volumes:
-      - ./recordings:/var/lib/guacamole/recordings
-      - ./recordings:/var/lib/guacamole/typescripts
-    networks:
-      - guac-net
-
   guacd:
     image: guacamole/guacd:1.6.0
     container_name: guac-guacd
     restart: unless-stopped
+    user: "1000:1000"
     environment:
-      - GUACD_LOG_LEVEL=debug  # Increased for troubleshooting
+      - GUACD_LOG_LEVEL=debug
     volumes:
       - ./recordings:/var/lib/guacamole/recordings
       - ./recordings:/var/lib/guacamole/typescripts
-    depends_on:
-      - guacd-init
+    command: >
+      /bin/sh -c "
+        mkdir -p /var/lib/guacamole/recordings /var/lib/guacamole/typescripts &&
+        chown 1000:1000 /var/lib/guacamole/recordings /var/lib/guacamole/typescripts &&
+        chmod 770 /var/lib/guacamole/recordings /var/lib/guacamole/typescripts &&
+        /opt/guacamole/sbin/guacd -f
+      "
     logging:
       driver: json-file
       options:
