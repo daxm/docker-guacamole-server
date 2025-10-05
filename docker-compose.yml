@@ -1,12 +1,5 @@
 version: '3.8'
 
-# Default logging config for all services (inherited unless overridden)
-logging:
-  driver: json-file
-  options:
-    max-size: ${LOG_MAX_SIZE:-10m}
-    max-file: ${LOG_MAX_FILE:-3}
-
 services:
   db:
     image: mysql:9.0
@@ -26,6 +19,11 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s
+    logging:
+      driver: json-file
+      options:
+        max-size: ${LOG_MAX_SIZE:-10m}
+        max-file: ${LOG_MAX_FILE:-3}
     networks:
       - guac-net
 
@@ -35,6 +33,11 @@ services:
     restart: unless-stopped
     environment:
       - GUACD_LOG_LEVEL=info  # debug for troubleshooting
+    logging:
+      driver: json-file
+      options:
+        max-size: ${LOG_MAX_SIZE:-10m}
+        max-file: ${LOG_MAX_FILE:-3}
     networks:
       - guac-net
 
@@ -60,6 +63,11 @@ services:
         condition: service_healthy
       guacd:
         condition: service_started
+    logging:
+      driver: json-file
+      options:
+        max-size: ${LOG_MAX_SIZE:-10m}
+        max-file: ${LOG_MAX_FILE:-3}
     networks:
       - guac-net
 
@@ -75,6 +83,11 @@ services:
       - ./nginx-certs:/etc/nginx/certs:ro
     depends_on:
       - guacamole
+    logging:
+      driver: json-file
+      options:
+        max-size: ${LOG_MAX_SIZE:-10m}
+        max-file: ${LOG_MAX_FILE:-3}
     networks:
       - guac-net
 
