@@ -33,6 +33,9 @@ services:
     restart: unless-stopped
     environment:
       - GUACD_LOG_LEVEL=info  # debug for troubleshooting
+    volumes:
+      - ./recordings:/var/lib/guacamole/recordings  # For graphical recordings
+      - ./recordings:/var/lib/guacamole/typescripts  # For SSH text (optional)
     logging:
       driver: json-file
       options:
@@ -58,6 +61,13 @@ services:
       # Proxy support (for NGINX)
       - REMOTE_IP_VALVE_ENABLED=true
       - PROXY_ALLOWED_IPS_REGEX=^(10\.|172\.1[6789]\.|192\.168\.)
+      # Recording extension
+      - RECORDING_ENABLED=true
+      # Optional: Global recording path (overrides default)
+      - GUACAMOLE_RECORD_PATH=/var/lib/guacamole/recordings
+      - GUACAMOLE_TYPESCRIPT_PATH=/var/lib/guacamole/typescripts
+    volumes:
+      - ./recordings:/var/lib/guacamole/recordings:ro  # Read-only for playback
     depends_on:
       db:
         condition: service_healthy
