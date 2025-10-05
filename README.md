@@ -5,6 +5,7 @@ Quick Start
 Clone & Prep:
 git clone https://github.com/daxm/docker-guacamole-server.git
 cd docker-guacamole-server
+git checkout dev
 cp .env.example .env
 nano .env  # Set passwords and SERVER_NAME (e.g., guacamole.local)
 
@@ -13,23 +14,19 @@ Start Services:
 docker compose up -d
 
 
-Initialize Database (once):
-./init-db.sh
-
-
-Access: https://<SERVER_NAME>:${HTTPS_PORT:-443} (login: guacadmin/guacadmin). Change password via Settings > Preferences.
+Access: https://<SERVER_NAME>:${HTTPS_PORT:-8443} (login: guacadmin/guacadmin). Change password via Settings > Preferences.
 
 
 Services
 
-MySQL: Persistent DB for users/connections (initialized via ./init-db.sh).
+MySQL: Persistent DB for users/connections (auto-initialized in ./mysql-data).
 guacd: Protocol proxy daemon (writes recordings to ./recordings).
 guacamole: Web app (Tomcat-based; reads recordings for playback).
 nginx: Reverse proxy with HTTPS (self-signed certs in ./nginx-certs).
 
 Customization
 
-Ports: Configurable via .env (e.g., HTTP_PORT=8080 if 80 is taken).
+Ports: Configurable via .env (defaults: HTTP_PORT=8080, HTTPS_PORT=8443).
 Internal DNS: Set SERVER_NAME in .env (e.g., guacamole.local; defaults to localhost).
 Logging: Configured per service in docker-compose.yml with LOG_MAX_SIZE (default 10MB) and LOG_MAX_FILE (default 3 rotations).
 Recordings: Enabled via RECORDING_ENABLED=true. Stored in ./recordings/{HISTORY_UUID}/recording.guac. Configure per-connection in UI: Settings > Connections > Screen Recording > Enable + Path=${HISTORY_PATH}/${HISTORY_UUID} + Check "Automatically create recording path" + Set "Do not write to existing recordings" + Include key events. For SSH, enable Typescript recording with Path=${HISTORY_PATH}/${HISTORY_UUID} + Check "Automatically create typescript path" + Set "Do not write to existing typescripts". Supported tokens: ${GUAC_USERNAME}, ${GUAC_PASSWORD}, ${GUAC_CLIENT_ADDRESS}, ${GUAC_CLIENT_HOSTNAME}, ${GUAC_DATE} (YYYYMMDD), ${GUAC_TIME} (HHMMSS), ${HISTORY_PATH}, ${HISTORY_UUID} (session UUID).

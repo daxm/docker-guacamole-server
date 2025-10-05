@@ -15,10 +15,33 @@ services:
       - ./mysql-data:/var/lib/mysql
     command: >
       /bin/sh -c "
+        echo 'Starting MySQL...' &&
         mkdir -p /var/lib/mysql &&
         chown 1000:1000 /var/lib/mysql &&
         chmod 770 /var/lib/mysql &&
-        docker-entrypoint.sh mysqld
+        docker-entrypoint.sh mysqld &
+        echo 'Waiting for MySQL to start...' &&
+        for i in {1..15}; do
+          if mysqladmin ping -h localhost -u root -p${MYSQL_ROOT_PASSWORD} --connect_timeout=10; then
+            echo 'MySQL is ready, checking database...' &&
+            if ! mysql -u ${MYSQL_USER} -p${MYSQL_PASSWORD} ${MYSQL_DATABASE} -e 'SELECT 1 FROM guacamole_entity LIMIT 1'; then
+              echo 'Running Guacamole schema initialization...' &&
+              docker run --rm --network guac-net guacamole/guacamole:1.6.0 /opt/guacamole/bin/initdb.sh --mysql | mysql -u ${MYSQL_USER} -p${MYSQL_PASSWORD} ${MYSQL_DATABASE} &&
+              echo 'Database initialized successfully';
+            else
+              echo 'Database already initialized';
+            fi &&
+            break;
+          else
+            echo 'MySQL not ready yet (attempt $i), waiting 10s...' &&
+            sleep 10;
+          fi;
+        done &&
+        if [ $i -eq 15 ]; then
+          echo 'Error: MySQL did not start in time' &&
+          exit 1;
+        fi &&
+        wait
       "
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
@@ -97,8 +120,8 @@ services:
     container_name: guac-nginx
     restart: unless-stopped
     ports:
-      - "${HTTP_PORT:-80}:80"
-      - "${HTTPS_PORT:-443}:443"
+      - "${HTTP_PORT:-8080}:80"
+      - "${HTTPS_PORT:-8443}:443"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx-certs:/etc/nginx/certs
