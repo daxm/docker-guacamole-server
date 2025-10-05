@@ -13,6 +13,21 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
       - ./mysql-data:/var/lib/mysql
+    command: >
+      /bin/sh -c "
+        mkdir -p /var/lib/mysql &&
+        chown 1000:1000 /var/lib/mysql &&
+        chmod 770 /var/lib/mysql &&
+        docker-entrypoint.sh mysqld &
+        sleep 10 &&
+        if ! mysql -u ${MYSQL_USER} -p${MYSQL_PASSWORD} ${MYSQL_DATABASE} -e 'SELECT 1 FROM guacamole_entity LIMIT 1' 2>/dev/null; then
+          docker run --rm guacamole/guacamole:1.6.0 /opt/guacamole/bin/initdb.sh --mysql | mysql -u ${MYSQL_USER} -p${MYSQL_PASSWORD} ${MYSQL_DATABASE};
+          echo 'Database initialized';
+        else
+          echo 'Database already initialized';
+        fi &&
+        wait
+      "
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "${MYSQL_USER}", "-p${MYSQL_PASSWORD}"]
       interval: 10s
@@ -41,7 +56,7 @@ services:
       /bin/sh -c "
         mkdir -p /var/lib/guacamole/recordings /var/lib/guacamole/typescripts &&
         chown 1000:1000 /var/lib/guacamole/recordings /var/lib/guacamole/typescripts &&
-        chmod 2750 /var/lib/guacamole/recordings /var/lib/guacamole/typescripts &&
+        chmod 2775 /var/lib/guacamole/recordings /var/lib/guacamole/typescripts &&
         /opt/guacamole/sbin/guacd -f
       "
     logging:
@@ -56,6 +71,7 @@ services:
     image: guacamole/guacamole:1.6.0
     container_name: guac-guacamole
     restart: unless-stopped
+    user: "999:1000"
     environment:
       # DB connection
       - MYSQL_HOSTNAME=db
@@ -74,7 +90,7 @@ services:
       - GUACAMOLE_RECORD_PATH=/var/lib/guacamole/recordings
       - GUACAMOLE_TYPESCRIPT_PATH=/var/lib/guacamole/typescripts
     volumes:
-      - ./recordings:/var/lib/guacamole/recordings:ro
+      - ./recordings:/var/lib/guacamole/recordings
     depends_on:
       db:
         condition: service_healthy
@@ -97,7 +113,23 @@ services:
       - "${HTTPS_PORT:-443}:443"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx-certs:/etc/nginx/certs:ro
+      - ./nginx-certs:/etc/nginx/certs
+    command: >
+      /bin/sh -c "
+        mkdir -p /etc/nginx/certs &&
+        chown root:root /etc/nginx/certs &&
+        chmod 755 /etc/nginx/certs &&
+        if [ ! -f /etc/nginx/certs/server.crt ] || [ ! -f /etc/nginx/certs/server.key ]; then
+          openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+            -keyout /etc/nginx/certs/server.key \
+            -out /etc/nginx/certs/server.crt \
+            -subj '/C=US/ST=State/L=City/O=Org/CN=${SERVER_NAME:-localhost}';
+          echo 'Certificates generated';
+        else
+          echo 'Certificates already exist';
+        fi &&
+        nginx -g 'daemon off;'
+      "
     depends_on:
       - guacamole
     logging:
