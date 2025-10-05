@@ -19,21 +19,28 @@ services:
         chown 1000:1000 /var/lib/mysql &&
         chmod 770 /var/lib/mysql &&
         docker-entrypoint.sh mysqld &
-        sleep 10 &&
-        if ! mysql -u ${MYSQL_USER} -p${MYSQL_PASSWORD} ${MYSQL_DATABASE} -e 'SELECT 1 FROM guacamole_entity LIMIT 1' 2>/dev/null; then
-          docker run --rm guacamole/guacamole:1.6.0 /opt/guacamole/bin/initdb.sh --mysql | mysql -u ${MYSQL_USER} -p${MYSQL_PASSWORD} ${MYSQL_DATABASE};
-          echo 'Database initialized';
-        else
-          echo 'Database already initialized';
-        fi &&
+        sleep 30 &&
+        for i in {1..5}; do
+          if mysql -u ${MYSQL_USER} -p${MYSQL_PASSWORD} ${MYSQL_DATABASE} -e 'SELECT 1' 2>/dev/null; then
+            if ! mysql -u ${MYSQL_USER} -p${MYSQL_PASSWORD} ${MYSQL_DATABASE} -e 'SELECT 1 FROM guacamole_entity LIMIT 1' 2>/dev/null; then
+              docker run --rm guacamole/guacamole:1.6.0 /opt/guacamole/bin/initdb.sh --mysql | mysql -u ${MYSQL_USER} -p${MYSQL_PASSWORD} ${MYSQL_DATABASE};
+              echo 'Database initialized';
+            else
+              echo 'Database already initialized';
+            fi &&
+            break;
+          fi &&
+          echo 'Waiting for MySQL to be ready...' &&
+          sleep 10;
+        done &&
         wait
       "
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "${MYSQL_USER}", "-p${MYSQL_PASSWORD}"]
       interval: 10s
       timeout: 5s
-      retries: 5
-      start_period: 30s
+      retries: 10
+      start_period: 60s
     logging:
       driver: json-file
       options:
@@ -82,7 +89,7 @@ services:
       # guacd connection
       - GUACD_HOSTNAME=guacd
       - GUACD_PORT=${GUACD_PORT:-4822}
-      # Proxy support (for NGINX)
+      # Proxy support
       - REMOTE_IP_VALVE_ENABLED=true
       - PROXY_ALLOWED_IPS_REGEX=^(10\.|172\.1[6789]\.|192\.168\.)
       # Recording extension
@@ -119,6 +126,7 @@ services:
         mkdir -p /etc/nginx/certs &&
         chown root:root /etc/nginx/certs &&
         chmod 755 /etc/nginx/certs &&
+        rm -f /etc/nginx/conf.d/* &&
         if [ ! -f /etc/nginx/certs/server.crt ] || [ ! -f /etc/nginx/certs/server.key ]; then
           openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
             -keyout /etc/nginx/certs/server.key \
