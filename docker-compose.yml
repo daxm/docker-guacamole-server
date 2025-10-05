@@ -15,28 +15,31 @@ services:
       - ./mysql-data:/var/lib/mysql
     command: >
       /bin/sh -c "
-        echo 'Starting MySQL...' &&
+        echo 'Starting MySQL initialization...' &&
+        echo 'Environment: MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}, MYSQL_DATABASE=${MYSQL_DATABASE}, MYSQL_USER=${MYSQL_USER}, MYSQL_PASSWORD=${MYSQL_PASSWORD}' &&
         mkdir -p /var/lib/mysql &&
         chown 1000:1000 /var/lib/mysql &&
         chmod 770 /var/lib/mysql &&
+        echo 'Starting MySQL server...' &&
         docker-entrypoint.sh mysqld &
         echo 'Waiting for MySQL to start...' &&
-        for i in {1..10}; do
-          if mysqladmin ping -h localhost -u root -p${MYSQL_ROOT_PASSWORD} --connect_timeout=10 2>/dev/null; then
+        for i in {1..15}; do
+          if mysqladmin ping -h localhost -u root -p${MYSQL_ROOT_PASSWORD} --connect_timeout=10; then
             echo 'MySQL is up, checking database...' &&
-            if ! mysql -u ${MYSQL_USER} -p${MYSQL_PASSWORD} ${MYSQL_DATABASE} -e 'SELECT 1 FROM guacamole_entity LIMIT 1' 2>/dev/null; then
+            if ! mysql -u ${MYSQL_USER} -p${MYSQL_PASSWORD} ${MYSQL_DATABASE} -e 'SELECT 1 FROM guacamole_entity LIMIT 1'; then
               echo 'Running Guacamole schema initialization...' &&
-              docker run --rm guacamole/guacamole:1.6.0 /opt/guacamole/bin/initdb.sh --mysql | mysql -u ${MYSQL_USER} -p${MYSQL_PASSWORD} ${MYSQL_DATABASE} &&
+              docker run --rm --network guac-net guacamole/guacamole:1.6.0 /opt/guacamole/bin/initdb.sh --mysql | mysql -u ${MYSQL_USER} -p${MYSQL_PASSWORD} ${MYSQL_DATABASE} &&
               echo 'Database initialized successfully';
             else
               echo 'Database already initialized';
             fi &&
             break;
-          fi &&
-          echo 'MySQL not ready yet (attempt $i), waiting 10s...' &&
-          sleep 10;
+          else
+            echo 'MySQL not ready yet (attempt $i), waiting 10s...' &&
+            sleep 10;
+          fi
         done &&
-        if [ $i -eq 10 ]; then
+        if [ $i -eq 15 ]; then
           echo 'Error: MySQL did not start in time' &&
           exit 1;
         fi &&
@@ -46,8 +49,8 @@ services:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
       interval: 10s
       timeout: 5s
-      retries: 12
-      start_period: 120s
+      retries: 15
+      start_period: 150s
     logging:
       driver: json-file
       options:
