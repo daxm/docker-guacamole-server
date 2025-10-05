@@ -10,8 +10,8 @@ cp .env.example .env
 nano .env  # Set passwords and SERVER_NAME (e.g., guacamole.local)
 
 
-Start Services:
-docker compose up -d
+Setup and Start:
+./runme.sh
 
 
 Access: https://<SERVER_NAME>:${HTTPS_PORT:-8443} (login: guacadmin/guacadmin). Change password via Settings > Preferences.
@@ -34,7 +34,7 @@ Add connections/users via GUI (Settings > Connections).
 
 Troubleshooting
 
-Logs: docker compose logs guac-guacamole (check /var/lib/docker/containers//.log).
+Logs: docker-compose logs guac-guacamole (check /var/lib/docker/containers//.log).
 Verify logging: docker inspect guac-mysql | grep -A 4 LogConfig.
 Debug DB: docker exec -it guac-mysql mysql -u <MYSQL_USER> -p<MYSQL_PASSWORD> <MYSQL_DATABASE>.
 Check tables: SHOW TABLES;
@@ -44,7 +44,7 @@ Check history: SELECT history_id, connection_id, start_date FROM guacamole_conne
 Test connections: Ensure target servers are reachable (e.g., SSH port 22 open).
 Copy/paste: Use HTTPS for clipboard. For RDP, verify rdpclip. For VNC, use modern servers (e.g., TigerVNC).
 Recordings: Check ./recordings (e.g., ./recordings/{session_uuid}/recording.guac). View in UI: Settings > Sessions > View link. Validate .guac: Check size (ls -lh recordings/...), play in UI, or convert to MP4 (docker run --rm -v $(pwd)/recordings:/recordings guacamole/guacd:1.6.0 guacenc -s 1024x768 -f mp4 /recordings/.../recording.mp4 /recordings/.../recording.guac). If no View link, verify permissions (sudo chown -R 1000:1000 recordings && chmod -R 2775 recordings), UI settings, and check if directory matches session UUID from logs (Connection ID is ...). Test container access: docker exec -it guac-guacamole sh -c "ls -l /var/lib/guacamole/recordings/{session_uuid}/*".
-Rebuild: docker compose down -v && docker compose up --build.
+Rebuild: docker-compose down -v && docker-compose up --build.
 
 Upgrading
 Pin images in docker-compose.yml to latest tags. Pull & restart.
