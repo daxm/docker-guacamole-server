@@ -15,32 +15,34 @@ services:
       - ./mysql-data:/var/lib/mysql
     command: >
       /bin/sh -c "
+        echo 'Starting MySQL initialization...' &&
         mkdir -p /var/lib/mysql &&
         chown 1000:1000 /var/lib/mysql &&
         chmod 770 /var/lib/mysql &&
         docker-entrypoint.sh mysqld &
-        sleep 30 &&
+        sleep 60 &&
         for i in {1..5}; do
-          if mysql -u ${MYSQL_USER} -p${MYSQL_PASSWORD} ${MYSQL_DATABASE} -e 'SELECT 1' 2>/dev/null; then
+          if mysqladmin ping -h localhost -u root -p${MYSQL_ROOT_PASSWORD} 2>/dev/null; then
             if ! mysql -u ${MYSQL_USER} -p${MYSQL_PASSWORD} ${MYSQL_DATABASE} -e 'SELECT 1 FROM guacamole_entity LIMIT 1' 2>/dev/null; then
-              docker run --rm guacamole/guacamole:1.6.0 /opt/guacamole/bin/initdb.sh --mysql | mysql -u ${MYSQL_USER} -p${MYSQL_PASSWORD} ${MYSQL_DATABASE};
+              echo 'Running Guacamole schema initialization...' &&
+              docker run --rm guacamole/guacamole:1.6.0 /opt/guacamole/bin/initdb.sh --mysql | mysql -u ${MYSQL_USER} -p${MYSQL_PASSWORD} ${MYSQL_DATABASE} &&
               echo 'Database initialized';
             else
               echo 'Database already initialized';
             fi &&
             break;
           fi &&
-          echo 'Waiting for MySQL to be ready...' &&
+          echo 'Waiting for MySQL to be ready (attempt $i)...' &&
           sleep 10;
         done &&
         wait
       "
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "${MYSQL_USER}", "-p${MYSQL_PASSWORD}"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
       interval: 10s
       timeout: 5s
       retries: 10
-      start_period: 60s
+      start_period: 90s
     logging:
       driver: json-file
       options:
