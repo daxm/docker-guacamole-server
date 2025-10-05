@@ -15,7 +15,6 @@ services:
       - ./mysql-data:/var/lib/mysql
     command: >
       /bin/sh -c "
-        echo 'Starting MySQL...' &&
         mkdir -p /var/lib/mysql &&
         chown 1000:1000 /var/lib/mysql &&
         chmod 770 /var/lib/mysql &&
@@ -66,19 +65,15 @@ services:
     restart: unless-stopped
     user: "999:1000"
     environment:
-      # DB connection
       - MYSQL_HOSTNAME=db
       - MYSQL_PORT=${MYSQL_PORT:-3306}
       - MYSQL_DATABASE=${MYSQL_DATABASE}
       - MYSQL_USER=${MYSQL_USER}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-      # guacd connection
       - GUACD_HOSTNAME=guacd
       - GUACD_PORT=${GUACD_PORT:-4822}
-      # Proxy support
       - REMOTE_IP_VALVE_ENABLED=true
       - PROXY_ALLOWED_IPS_REGEX=^(10\.|172\.1[6789]\.|192\.168\.)
-      # Recording extension
       - RECORDING_ENABLED=true
       - GUACAMOLE_RECORD_PATH=/var/lib/guacamole/recordings
       - GUACAMOLE_TYPESCRIPT_PATH=/var/lib/guacamole/typescripts

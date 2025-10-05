@@ -13,12 +13,16 @@ Start Services:
 docker compose up -d
 
 
+Initialize Database (once):
+./init-db.sh
+
+
 Access: https://<SERVER_NAME>:${HTTPS_PORT:-443} (login: guacadmin/guacadmin). Change password via Settings > Preferences.
 
 
 Services
 
-MySQL: Persistent DB for users/connections (auto-initialized in ./mysql-data).
+MySQL: Persistent DB for users/connections (initialized via ./init-db.sh).
 guacd: Protocol proxy daemon (writes recordings to ./recordings).
 guacamole: Web app (Tomcat-based; reads recordings for playback).
 nginx: Reverse proxy with HTTPS (self-signed certs in ./nginx-certs).
