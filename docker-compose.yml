@@ -41,7 +41,7 @@ services:
       /bin/sh -c "
         mkdir -p /var/lib/guacamole/recordings /var/lib/guacamole/typescripts &&
         chown 1000:1000 /var/lib/guacamole/recordings /var/lib/guacamole/typescripts &&
-        chmod 770 /var/lib/guacamole/recordings /var/lib/guacamole/typescripts &&
+        chmod 2750 /var/lib/guacamole/recordings /var/lib/guacamole/typescripts &&
         /opt/guacamole/sbin/guacd -f
       "
     logging:
