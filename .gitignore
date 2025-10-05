@@ -1,3 +1,6 @@
-/mysql/database
-/nginx/certs
+/mysql-data
+/nginx-certs
+/recordings
 .idea*
+.env
+initdb.sql
