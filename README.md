@@ -1,51 +1,45 @@
-This is a project to build a series of Docker containers to support Guacamole, with a MySQL backend, that is frontended by NGINX using HTTPS.
+Docker Guacamole Server (Modernized)
 
-Notes to prep the server/VM to run/use this Git repo:
-# Clone this repository
-```bash
-mkdir -p ~/containers
-cd ~/containers
-git clone https://github.com/daxm/docker-guacamole-server.git
-cd ./docker-guacamole-server
+A Docker Compose setup for Apache Guacamole 1.6.0 with MySQL backend and NGINX HTTPS frontend. Supports VNC/RDP/SSH/Telnet. Designed for internal networks with a DNS-resolvable hostname.
 
-```
+Quick Start
 
-# Install Docker
-```bash
-./install_docker.sh
+1. Clone & Prep:
+   git clone https://github.com/daxm/docker-guacamole-server.git
+   cd docker-guacamole-server
+   cp .env.example .env
+   nano .env  # Update passwords/server_name/ports (e.g., SERVER_NAME=guacamole.local)
 
-```
-# Update User's group environment.
-* Log out and back in to update your user's group or the runme.sh script won't work.
+2. Generate Certs:
+   ./generate-certs.sh
+   # Creates self-signed certs for internal DNS hostname
 
-# Update env_file to meet password requirements
-```bash
-cd ~/containers/docker-guacamole-server
-nano ./env_file
+3. Start Services:
+   docker compose up -d
 
-```
+4. Init DB (once):
+   ./init-db.sh
 
-# Prep MySQL and NGINX environments and then build containers
-This file will create a directory for the mysql database and build a cert for nginx.
-```bash
-cd ~/containers/docker-guacamole-server
-./runme.sh
+5. Access: https://<SERVER_NAME>:${HTTPS_PORT:-443} (login: guacadmin/guacadmin). Change password via Settings > Preferences.
 
-```
+Services
+- MySQL: Persistent DB for users/connections.
+- guacd: Protocol proxy daemon.
+- Guacamole: Web app (Tomcat-based).
+- NGINX: Reverse proxy with HTTPS (self-signed certs).
 
-```bash
-docker exec my_guacamole /opt/guacamole/bin/initdb.sh --mysql > ./mysql/initdb.sql
-```
+Customization
+- Ports: Configurable via .env (e.g., HTTP_PORT=8080 if 80 is taken).
+- Internal DNS: Set SERVER_NAME in .env to your local hostname (e.g., guacamole.local; defaults to localhost).
+- Logging: Global config via LOG_MAX_SIZE (default 10MB) and LOG_MAX_FILE (default 3 rotations) in .env.
+- Add connections/users via GUI.
 
-```bash
-./runme.sh
+Troubleshooting
+- Logs: docker compose logs guac-guacamole (view rotated files in /var/lib/docker/containers/*/*.log).
+- Rebuild: docker compose down -v && docker compose up --build.
+- Ports: Exposed via env vars; internal ports isolated.
 
-```
+Upgrading
+Pin images in docker-compose.yml to latest tags. Pull & restart.
 
-# Change Guacamole admin password
-- Access your new guacamole GUI by browsing to the IP address of your server.
-- Log in with **guacadmin**/**guacadmin**
-- Navigate to **guacadmin > Settings > Preferences**
-- Select **guacadmin**
-- Update password field to be something new/unique and click **Save**.
-
+Built with ❤️ by daxm (2025 refresh).
