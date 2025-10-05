@@ -5,22 +5,25 @@ A Docker Compose setup for Apache Guacamole 1.6.0 with MySQL backend and NGINX H
 Quick Start
 
 1. Clone & Prep:
-   git clone https://github.com/daxm/docker-guacamole-server.git
-   cd docker-guacamole-server
-   cp .env.example .env
-   nano .env  # Update passwords/server_name/ports (e.g., SERVER_NAME=guacamole.local)
+   - `git clone https://github.com/daxm/docker-guacamole-server.git`
+   - `cd docker-guacamole-server`
+   - `cp .env.example .env`
+   - `nano .env`  # Update passwords/server_name/ports (e.g., SERVER_NAME=guacamole.local)
 
 2. Generate Certs:
-   ./generate-certs.sh
-   # Creates self-signed certs for internal DNS hostname
+   - `chmod 755 *.sh`
+   - `./generate-certs.sh` # Creates self-signed certs for internal DNS hostname
 
 3. Start Services:
-   docker compose up -d
+   - `docker compose up -d`
 
 4. Init DB (once):
-   ./init-db.sh
+   - `./init-db.sh`
 
-5. Access: https://<SERVER_NAME>:${HTTPS_PORT:-443} (login: guacadmin/guacadmin). Change password via Settings > Preferences.
+5. Connect:
+    - Access: https://<SERVER_NAME>:${HTTPS_PORT:-443}
+    - login: guacadmin/guacadmin
+    - Change password via Settings > Preferences.
 
 Services
 - MySQL: Persistent DB for users/connections.
