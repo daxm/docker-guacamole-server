@@ -2,8 +2,8 @@ import requests
 import sys
 
 # Configuration
-base_url = "http://guacamole:8080/api/session/data/mysql"
-token = "<your_authToken>"  # Replace with guacadmin authToken from `curl -X POST -d 'username=guacadmin&password=<your_password>' https://<your_hostname>:8443/api/tokens --insecure`
+base_url = "http://guacamole:8080/guacamole/api/session/data/mysql"
+token = "your_auth_token_here"  # Replace with guacadmin authToken from `curl -X POST -d 'username=guacadmin&password=<your_password>' https://<your_hostname>:8443/api/tokens --insecure`
 
 def api_request(method, endpoint):
     """Helper function for Guacamole API requests"""
