@@ -24,6 +24,7 @@ A Docker Compose setup for Apache Guacamole 1.6.0 with MySQL backend and NGINX H
 - guacd: Protocol proxy daemon (writes recordings to ./recordings).
 - guacamole: Web app (Tomcat-based; reads recordings for playback).
 - nginx: Reverse proxy with HTTPS (self-signed certs in ./nginx-certs).
+- script-runner: Runs Python scripts for bulk configuration (see Scripts section).
 
 ## Customization
 
@@ -49,6 +50,21 @@ A Docker Compose setup for Apache Guacamole 1.6.0 with MySQL backend and NGINX H
     - For SSH connections, in the Typescript section.
         - Set **Typescript path:** to **\${HISTORY_PATH}/${HISTORY_UUID}** and check box the **Automatically create typescript path:** checkbox.
 - If configured correctly you can then replay a session via the **View** link in the **Settings > History** page.  If there is no **View** link then most likely recording isn't (or wasn't) set up for that connection.
+
+## Scripts
+
+- The `script-runner` folder contains utilities for bulk configuration (e.g., `create_guacamole_structure.py` for user groups, users, connection groups, and connections).
+- The `scripts` folder is for user-created Python scripts.
+- Dependencies are listed in `script-runner/requirements.txt` and installed in the `script-runner` container.
+- Run the default script:
+  ```bash
+  docker-compose run --rm script-runner python create_guacamole_structure.py
+  ```
+- Run a custom script from the `scripts` folder:
+  ```bash
+  docker-compose run --rm script-runner python /scripts/your_script.py
+  ```
+- Before running, update `script-runner/create_guacamole_structure.py` with your `guacadmin` authToken (obtain via `curl -X POST -d 'username=guacadmin&password=<your_password>' https://guacamole.local:8443/api/tokens --insecure`) and connection details.
 
 ## Troubleshooting
 

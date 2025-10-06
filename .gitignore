@@ -1,5 +1,17 @@
-/mysql-data
-/nginx-certs
-/recordings
-.idea*
+# Docker volumes
+mysql-data/
+nginx-certs/
+recordings/
+
+# Environment
 .env
+
+# Script-runner
+script-runner/*.pyc
+script-runner/__pycache__/
+
+# User scripts
+scripts/*.pyc
+scripts/__pycache__/
+
+.idea/

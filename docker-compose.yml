@@ -129,6 +129,16 @@ services:
     networks:
       - guac-net
 
+  script-runner:
+    build:
+      context: ./script-runner
+      dockerfile: Dockerfile
+    volumes:
+      - ./script-runner:/script-runner
+      - ./scripts:/scripts
+    networks:
+      - guac-net
+
 networks:
   guac-net:
     name: guac-net
