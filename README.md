@@ -53,18 +53,27 @@ A Docker Compose setup for Apache Guacamole 1.6.0 with MySQL backend and NGINX H
 
 ## Scripts
 
-- The `script-runner` folder contains utilities for bulk configuration (e.g., `create_guacamole_structure.py` for user groups, users, connection groups, and connections).
+- The `script-runner` folder contains utilities for bulk configuration (e.g., `create_guacamole_structure.py` for user groups, users, connection groups, and connections) and an example script (`example.py` to test API connectivity).
 - The `scripts` folder is for user-created Python scripts.
 - Dependencies are listed in `script-runner/requirements.txt` and installed in the `script-runner` container.
-- Run the default script:
+- Scripts use `http://guacamole:8080` to reach the Guacamole API internally. For external API calls, use your server's hostname (e.g., `https://prdscp-bkp01:8443`).
+- Get the `guacadmin` authToken:
   ```bash
-  docker-compose run --rm script-runner python create_guacamole_structure.py
+  curl -X POST -d 'username=guacadmin&password=<your_password>' https://<your_hostname>:8443/api/tokens --insecure
+  ```
+- Test API connectivity:
+  ```bash
+  docker-compose run --rm script-runner python /script-runner/example.py
+  ```
+- Run the bulk configuration script:
+  ```bash
+  docker-compose run --rm script-runner python /script-runner/create_guacamole_structure.py
   ```
 - Run a custom script from the `scripts` folder:
   ```bash
   docker-compose run --rm script-runner python /scripts/your_script.py
   ```
-- Before running, update `script-runner/create_guacamole_structure.py` with your `guacadmin` authToken (obtain via `curl -X POST -d 'username=guacadmin&password=<your_password>' https://guacamole.local:8443/api/tokens --insecure`) and connection details.
+- Before running, update scripts with your `guacadmin` authToken and connection details.
 
 ## Troubleshooting
 
