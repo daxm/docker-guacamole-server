@@ -9,7 +9,7 @@ A Docker Compose setup for Apache Guacamole 1.6.0 with MySQL backend and NGINX H
 1. `git clone https://github.com/daxm/docker-guacamole-server.git`
 2. `cd docker-guacamole-server`
 3. `cp .env.example .env`
-4. `nano .env`  Set passwords and SERVER_NAME (e.g., guacamole.local)
+4. `nano .env`  Set passwords and SERVER_NAME (e.g., prdscp-bkp01)
 
 ### Setup and Start:
 
@@ -24,7 +24,6 @@ A Docker Compose setup for Apache Guacamole 1.6.0 with MySQL backend and NGINX H
 - guacd: Protocol proxy daemon (writes recordings to ./recordings).
 - guacamole: Web app (Tomcat-based; reads recordings for playback).
 - nginx: Reverse proxy with HTTPS (self-signed certs in ./nginx-certs).
-- script-runner: Runs Python scripts for bulk configuration (see Scripts section).
 
 ## Customization
 
@@ -42,50 +41,37 @@ A Docker Compose setup for Apache Guacamole 1.6.0 with MySQL backend and NGINX H
 
 ### Recordings and Typescripts
 
-- Enabled via RECORDING_ENABLED=true in docker-compose.yml file.
+- Enabled via RECORDING_ENABLED=true in docker-compose.yml.
 - Stored in ./recordings/{HISTORY_UUID}/recording.
 - Configured per-connection in UI: **Settings > Connections > <CONNECTION> > Screen Recording** section.
-    - Set **Recording Path:** to **\${HISTORY_PATH}/${HISTORY_UUID}**.
-    - Check boxes for **Include key events:** and **Automatically create recording path:** 
-    - For SSH connections, in the Typescript section.
-        - Set **Typescript path:** to **\${HISTORY_PATH}/${HISTORY_UUID}** and check box the **Automatically create typescript path:** checkbox.
-- If configured correctly you can then replay a session via the **View** link in the **Settings > History** page.  If there is no **View** link then most likely recording isn't (or wasn't) set up for that connection.
-
-## Scripts
-
-- The `script-runner` folder contains utilities for bulk configuration (e.g., `create_guacamole_structure.py` for user groups, users, connection groups, and connections) and an example script (`example.py` to test API connectivity).
-- The `scripts` folder is for user-created Python scripts.
-- Dependencies are listed in `script-runner/requirements.txt` and installed in the `script-runner` container.
-- Scripts use `http://guacamole:8080` to reach the Guacamole API internally. For external API calls, use your server's hostname (e.g., `https://prdscp-bkp01:8443`).
-- Get the `guacadmin` authToken:
-  ```bash
-  curl -X POST -d 'username=guacadmin&password=<your_password>' https://<your_hostname>:8443/api/tokens --insecure
-  ```
-- Test API connectivity:
-  ```bash
-  docker-compose run --rm script-runner python /script-runner/example.py
-  ```
-- Run the bulk configuration script:
-  ```bash
-  docker-compose run --rm script-runner python /script-runner/create_guacamole_structure.py
-  ```
-- Run a custom script from the `scripts` folder:
-  ```bash
-  docker-compose run --rm script-runner python /scripts/your_script.py
-  ```
-- Before running, update scripts with your `guacadmin` authToken and connection details.
+    - Set **Recording Path:** to **${HISTORY_PATH}/${HISTORY_UUID}**.
+    - Check boxes for **Include key events:** and **Automatically create recording path:**.
+    - For SSH connections, in the Typescript section:
+        - Set **Typescript path:** to **${HISTORY_PATH}/${HISTORY_UUID}** and check the **Automatically create typescript path:** checkbox.
+- If configured correctly, replay sessions via the **View** link in **Settings > History**. If no **View** link appears, recording may not be set up for that connection.
 
 ## Troubleshooting
 
-- Logs: `docker-compose logs -f`
-- Verify logging: `docker inspect guac-mysql | grep -A 4 LogConfig`.
-- Debug DB: `docker exec -it guac-mysql mysql -u <MYSQL_USER> -p<MYSQL_PASSWORD> <MYSQL_DATABASE>`.
+- **Connection Issues**:
+  - Ensure target servers are reachable (e.g., SSH port 22 open).
+  - Check container status: `docker ps`.
+  - Verify logs: `docker-compose logs -f`.
+- **Database Issues**:
+  - Debug DB: `docker exec -it guac-mysql mysql -u ${MYSQL_USER} -p${MYSQL_PASSWORD} ${MYSQL_DATABASE}`.
     - Check tables: `SHOW TABLES;`
     - Check history: `SELECT history_id, connection_id, start_date FROM guacamole_connection_history ORDER BY start_date DESC;`
-- Test connections: Ensure target servers are reachable (e.g., SSH port 22 open).
-- Copy/paste: Use HTTPS for clipboard. For RDP, verify rdpclip. For VNC, use modern servers (e.g., TigerVNC).
-- Recordings: Check ./recordings (e.g., ./recordings/\<UUID>/recording).
-- Rebuild: `docker-compose down -v && docker-compose up --build`
+- **Logging**:
+  - Verify logging: `docker inspect guac-mysql | grep -A 4 LogConfig`.
+- **Copy/Paste**:
+  - Use HTTPS for clipboard functionality.
+  - For RDP, ensure rdpclip is enabled.
+  - For VNC, use modern servers (e.g., TigerVNC).
+- **Recordings**:
+  - Check ./recordings (e.g., ./recordings/<UUID>/recording).
+  - Verify permissions: `ls -ld recordings`.
+  - Fix permissions: `sudo chown -R 1000:1000 recordings && sudo chmod -R 2775 recordings`.
+- **Rebuild**:
+  - `docker-compose down -v && docker-compose up --build`
 
 ## Upgrading
 
@@ -93,4 +79,4 @@ A Docker Compose setup for Apache Guacamole 1.6.0 with MySQL backend and NGINX H
 2. `docker-compose pull`
 3. `./runme.sh`
 
-Built with ❤️ by daxm and Grok!
+Built with ❤️ by daxm!
